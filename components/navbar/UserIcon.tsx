@@ -1,6 +1,8 @@
+import { FaCircleUser } from "react-icons/fa6"
+
 function UserIcon() {       
   return (
-    <div>UserIcon</div>
+    <FaCircleUser className="w-6 h-6 bg-primary rounded-full text-white"/>
   )
 }
 
