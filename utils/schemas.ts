@@ -2,7 +2,17 @@ import * as z from 'zod';
 import { ZodSchema } from 'zod';
 
 export const profileSchema: ZodSchema = z.object({
-    firstName: z.string().min(2, 'min length is 2'),
-    lastName: z.string().min(2, 'min length is 2'),
-    username: z.string().min(2, 'min length is 2'),
+    firstName: z.string().min(2, {message: 'first name must be at least 2 characters'}),
+    lastName: z.string().min(2, {message: 'last name must be at least 2 characters'}),
+    username: z.string().min(2, {message: 'username must be at least 2 characters'}),
 });
+
+export function validateWithZodSchema<T>(schema: ZodSchema<T>,data:unknown):T{
+    const result = schema.safeParse(data);
+
+    if (!result.success) {
+        const errorMessages = result.error.issues.map((issue) => issue.message);
+        throw new Error(errorMessages.join(', '));
+    }
+    return result.data;
+}
