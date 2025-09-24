@@ -11,7 +11,7 @@ const nextConfig = {
                 hostname: '"vobyiueuxawaenzvbtdb.supabase.co"'
             },
         ],
-    },
+    }, 
 };
 
 export default nextConfig;
