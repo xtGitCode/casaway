@@ -179,4 +179,79 @@ export const fetchProperties = async({search='', category}: {search?: string, ca
     return properties;
 };
 
+export const fetchFavouriteId = async({propertyId}:{propertyId: string})=>{
+    const user = await getAuthUser()
+    const favourite = await db.favorite.findFirst({
+        where: {
+            propertyId,
+            profileId: user.id,
+        },
+        select: {
+            id: true,
+        }
+    });
+    return favourite?.id || null;
+};
 
+export const toggleFavouriteAction = async (prevState: {
+    propertyId: string;
+    favouriteId: string | null;
+    pathname: string;
+}) => {
+    const user = await getAuthUser();
+    const {propertyId, favouriteId, pathname} = prevState;
+    try {
+        if (favouriteId){
+            await db.favorite.delete({
+                where: {
+                    id: favouriteId,
+                }
+            })
+        } else {
+            await db.favorite.create({
+                data: {
+                    propertyId,
+                    profileId: user.id,
+                }
+            })
+        }
+        revalidatePath(pathname);
+        return {message:favouriteId?'Removed from Fav':'Added to Fav'}
+    } catch (error) {
+        return renderError(error);
+    }
+    
+};
+
+export const fetchFavourites = async () => {
+    const user = await getAuthUser();
+    const favourites = await db.favorite.findMany({
+        where: {
+            profileId: user.id,
+        },
+        select: {
+            property: {
+                select: {
+                    id: true,
+                    name: true,
+                    tagline: true,
+                    country: true,
+                    price: true,
+                    image: true,
+                }
+            }
+        }
+    });
+    return favourites.map(fav => fav.property);
+}
+
+export const fetchPropertyDetails = (id:string) => {
+    return db.property.findUnique({
+        where: {
+            id,
+        },
+        include: {
+            profile: true,
+        }
+    })
+}
