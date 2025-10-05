@@ -1,6 +1,6 @@
 import { FaStar } from "react-icons/fa6";
 
-function PropertyRating({propertyId, inPage}:{propertyId: string; inPage: boolean}) {
+function PropertyRating({inPage}:{inPage: boolean}) {
   
   const rating = 4.7
   const count = 100
