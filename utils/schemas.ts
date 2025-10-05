@@ -1,13 +1,15 @@
-import * as z from 'zod';
-import { ZodSchema } from 'zod';
+import { z } from 'zod';
 
-export const profileSchema: ZodSchema = z.object({
+export const profileSchema = z.object({
     firstName: z.string().min(2, {message: 'first name must be at least 2 characters'}),
     lastName: z.string().min(2, {message: 'last name must be at least 2 characters'}),
     username: z.string().min(2, {message: 'username must be at least 2 characters'}),
 });
 
-export function validateWithZodSchema<T>(schema: ZodSchema<T>,data:unknown):T{
+export function validateWithZodSchema<T extends z.ZodTypeAny>(
+    schema: T,
+    data: unknown
+): z.infer<T> {
     const result = schema.safeParse(data);
 
     if (!result.success) {
@@ -19,7 +21,7 @@ export function validateWithZodSchema<T>(schema: ZodSchema<T>,data:unknown):T{
 }
 
 export const imageSchema = z.object({
-    image:validateFile()
+    image: validateFile()
 })
 
 function validateFile(){
