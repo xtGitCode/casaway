@@ -1,6 +1,5 @@
 import FavouriteToggleButton from "@/components/card/FavouriteToggleButton";
 import PropertyRating from "@/components/card/PropertyRating";
-import BookingCalendar from "@/components/properties/BookingCalendar";
 import BreadCrumbs from "@/components/properties/BreadCrumbs";
 import ImageContainer from "@/components/properties/ImageContainer";
 import PropertyDetails from "@/components/properties/PropertyDetails";
@@ -26,6 +25,13 @@ const DynamicMap = dynamic(
   loading: () => <Skeleton className="h-[400px] w-full" />,
 });
 
+const DynamicBookingWrapper = dynamic(
+  () => import('@/components/booking/BookingWrapper'), 
+  {
+  ssr: false,
+  loading: () => <Skeleton className="h-[200px] w-full" />,
+});
+
 async function PropertyDetailPage({params}:{params:{id:string}}) {
   const property = await fetchPropertyDetails(params.id);
   
@@ -39,6 +45,7 @@ async function PropertyDetailPage({params}:{params:{id:string}}) {
   const isNotOwner = property.profile.clerkId !== userId;
   const reviewDoesNotExist = userId && isNotOwner && !(await findExistingReview(userId, property.id));
   
+
   return(
     <section>
       <BreadCrumbs name={property.name}/>
@@ -68,7 +75,8 @@ async function PropertyDetailPage({params}:{params:{id:string}}) {
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           {/* calandar*/}
-          <BookingCalendar /> 
+          <DynamicBookingWrapper propertyId={property.id} price={property.price} 
+          bookings={property.bookings} />
         </div>
       </section>
       {reviewDoesNotExist && <SubmitReview propertyId={property.id} />}
